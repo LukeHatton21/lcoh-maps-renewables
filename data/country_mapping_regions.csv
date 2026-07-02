@@ -1,0 +1,251 @@
+index,country,country_name,region
+1,AD,Andorra,Europe
+2,AE,United Arab Emirates,MENA
+3,AF,Afghanistan,Asia
+4,AG,Antigua and Barbuda,Latin America & Caribbean
+5,AI,Anguilla,Latin America & Caribbean
+6,AL,Albania,Europe
+7,AM,Armenia,Asia
+8,AO,Angola,Sub-Saharan Africa
+9,AR,Argentina,Latin America & Caribbean
+10,AS,American Samoa,Oceania
+11,AT,Austria,Europe
+12,AU,Australia,Oceania
+13,AW,Aruba,Latin America & Caribbean
+14,AX,Aland Islands,Europe
+15,AZ,Azerbaijan,Asia
+16,BA,Bosnia and Herzegovina,Europe
+17,BB,Barbados,Latin America & Caribbean
+18,BD,Bangladesh,Asia
+19,BE,Belgium,Europe
+20,BF,Burkina Faso,Sub-Saharan Africa
+21,BG,Bulgaria,Europe
+22,BH,Bahrain,MENA
+23,BI,Burundi,Sub-Saharan Africa
+24,BJ,Benin,Sub-Saharan Africa
+25,BL,Saint Barthelemy,Latin America & Caribbean
+26,BM,Bermuda,North America
+27,BN,Brunei,Asia
+28,BO,Bolivia,Latin America & Caribbean
+29,BQ,Caribbean Netherlands,Latin America & Caribbean
+30,BR,Brazil,Latin America & Caribbean
+31,BS,Bahamas,Latin America & Caribbean
+32,BT,Bhutan,Asia
+33,BV,Bouvet Island,Europe
+34,BW,Botswana,Sub-Saharan Africa
+35,BY,Belarus,Europe
+36,BZ,Belize,Latin America & Caribbean
+37,CA,Canada,North America
+38,CC,Cocos (Keeling) Islands,Asia
+39,CD,Democratic Republic of the Congo,Sub-Saharan Africa
+40,CF,Central African Republic,Sub-Saharan Africa
+41,CG,Republic of the Congo,Sub-Saharan Africa
+42,CH,Switzerland,Europe
+43,CI,Cote d'Ivoire,Sub-Saharan Africa
+44,CK,Cook Islands,Oceania
+45,CL,Chile,Latin America & Caribbean
+46,CM,Cameroon,Sub-Saharan Africa
+47,CN,China,China
+48,CO,Colombia,Latin America & Caribbean
+49,CR,Costa Rica,Latin America & Caribbean
+50,CU,Cuba,Latin America & Caribbean
+51,CV,Cabo Verde,Sub-Saharan Africa
+52,CW,Curacao,Latin America & Caribbean
+53,CX,Christmas Island,Asia
+54,CY,Cyprus,MENA
+55,CZ,Czechia,Europe
+56,DE,Germany,Europe
+57,DJ,Djibouti,MENA
+58,DK,Denmark,Europe
+59,DM,Dominica,Latin America & Caribbean
+60,DO,Dominican Republic,Latin America & Caribbean
+61,DZ,Algeria,MENA
+62,EC,Ecuador,Latin America & Caribbean
+63,EE,Estonia,Europe
+64,EG,Egypt,MENA
+65,EH,Western Sahara,MENA
+66,ER,Eritrea,Sub-Saharan Africa
+67,ES,Spain,Europe
+68,ET,Ethiopia,Sub-Saharan Africa
+69,FI,Finland,Europe
+70,FJ,Fiji,Oceania
+71,FK,Falkland Islands,Latin America & Caribbean
+72,FM,Federated States of Micronesia,Oceania
+73,FO,Faroe Islands,Europe
+74,FR,France,Europe
+75,GA,Gabon,Sub-Saharan Africa
+76,GB,United Kingdom,Europe
+77,GD,Grenada,Latin America & Caribbean
+78,GE,Georgia,Asia
+79,GF,French Guiana,Latin America & Caribbean
+80,GG,Guernsey,Europe
+81,GH,Ghana,Sub-Saharan Africa
+82,GI,Gibraltar,Europe
+83,GL,Greenland,North America
+84,GM,Gambia,Sub-Saharan Africa
+85,GN,Guinea,Sub-Saharan Africa
+86,GP,Guadeloupe,Latin America & Caribbean
+87,GQ,Equatorial Guinea,Sub-Saharan Africa
+88,GR,Greece,Europe
+89,GS,South Georgia and the South Sandwich Islands,Latin America & Caribbean
+90,GT,Guatemala,Latin America & Caribbean
+91,GU,Guam,Oceania
+92,GW,Guinea-Bissau,Sub-Saharan Africa
+93,GY,Guyana,Latin America & Caribbean
+94,HK,Hong Kong,Asia
+95,HM,Heard Island and McDonald Islands,Oceania
+96,HN,Honduras,Latin America & Caribbean
+97,HR,Croatia,Europe
+98,HT,Haiti,Latin America & Caribbean
+99,HU,Hungary,Europe
+100,ID,Indonesia,Asia
+101,IE,Ireland,Europe
+102,IL,Israel,MENA
+103,IM,Isle of Man,Europe
+104,IN,India,Asia
+105,IO,British Indian Ocean Territory,Asia
+106,IQ,Iraq,MENA
+107,IR,Iran,MENA
+108,IS,Iceland,Europe
+109,IT,Italy,Europe
+110,JE,Jersey,Europe
+111,JM,Jamaica,Latin America & Caribbean
+112,JO,Jordan,MENA
+113,JP,Japan,Asia
+114,KE,Kenya,Sub-Saharan Africa
+115,KG,Kyrgyzstan,Asia
+116,KH,Cambodia,Asia
+117,KI,Kiribati,Oceania
+118,KM,Comoros,Sub-Saharan Africa
+119,KN,Saint Kitts and Nevis,Latin America & Caribbean
+120,KP,North Korea,Asia
+121,KR,South Korea,Asia
+122,KW,Kuwait,MENA
+123,KY,Cayman Islands,Latin America & Caribbean
+124,KZ,Kazakhstan,Asia
+125,LA,Laos,Asia
+126,LB,Lebanon,MENA
+127,LC,Saint Lucia,Latin America & Caribbean
+128,LI,Liechtenstein,Europe
+129,LK,Sri Lanka,Asia
+130,LR,Liberia,Sub-Saharan Africa
+131,LS,Lesotho,Sub-Saharan Africa
+132,LT,Lithuania,Europe
+133,LU,Luxembourg,Europe
+134,LV,Latvia,Europe
+135,LY,Libya,MENA
+136,MA,Morocco,MENA
+137,MC,Monaco,Europe
+138,MD,Moldova,Europe
+139,ME,Montenegro,Europe
+140,MF,Saint Martin,Latin America & Caribbean
+141,MG,Madagascar,Sub-Saharan Africa
+142,MH,Marshall Islands,Oceania
+143,MK,North Macedonia,Europe
+144,ML,Mali,Sub-Saharan Africa
+145,MM,Myanmar,Asia
+146,MN,Mongolia,Asia
+147,MO,Macao,Asia
+148,MP,Northern Mariana Islands,Oceania
+149,MQ,Martinique,Latin America & Caribbean
+150,MR,Mauritania,MENA
+151,MS,Montserrat,Latin America & Caribbean
+152,MT,Malta,Europe
+153,MU,Mauritius,Sub-Saharan Africa
+154,MV,Maldives,Asia
+155,MW,Malawi,Sub-Saharan Africa
+156,MX,Mexico,North America
+157,MY,Malaysia,Asia
+158,MZ,Mozambique,Sub-Saharan Africa
+159,NA,Namibia,Sub-Saharan Africa
+160,NC,New Caledonia,Oceania
+161,NE,Niger,Sub-Saharan Africa
+162,NF,Norfolk Island,Oceania
+163,NG,Nigeria,Sub-Saharan Africa
+164,NI,Nicaragua,Latin America & Caribbean
+165,NL,Netherlands,Europe
+166,NO,Norway,Europe
+167,NP,Nepal,Asia
+168,NR,Nauru,Oceania
+169,NU,Niue,Oceania
+170,NZ,New Zealand,Oceania
+171,OM,Oman,MENA
+172,PA,Panama,Latin America & Caribbean
+173,PE,Peru,Latin America & Caribbean
+174,PF,French Polynesia,Oceania
+175,PG,Papua New Guinea,Oceania
+176,PH,Philippines,Asia
+177,PK,Pakistan,Asia
+178,PL,Poland,Europe
+179,PM,Saint Pierre and Miquelon,North America
+180,PN,Pitcairn,Oceania
+181,PR,Puerto Rico,Latin America & Caribbean
+182,PS,Palestine,MENA
+183,PT,Portugal,Europe
+184,PW,Palau,Oceania
+185,PY,Paraguay,Latin America & Caribbean
+186,QA,Qatar,MENA
+187,RE,Reunion,Sub-Saharan Africa
+188,RO,Romania,Europe
+189,RS,Serbia,Europe
+190,RU,Russia,Europe
+191,RW,Rwanda,Sub-Saharan Africa
+192,SA,Saudi Arabia,MENA
+193,SB,Solomon Islands,Oceania
+194,SC,Seychelles,Sub-Saharan Africa
+195,SD,Sudan,MENA
+196,SE,Sweden,Europe
+197,SG,Singapore,Asia
+198,SH,Saint Helena,Sub-Saharan Africa
+199,SI,Slovenia,Europe
+200,SJ,Svalbard and Jan Mayen,Europe
+201,SK,Slovakia,Europe
+202,SL,Sierra Leone,Sub-Saharan Africa
+203,SM,San Marino,Europe
+204,SN,Senegal,Sub-Saharan Africa
+205,SO,Somalia,Sub-Saharan Africa
+206,SR,Suriname,Latin America & Caribbean
+207,SS,South Sudan,Sub-Saharan Africa
+208,ST,Sao Tome and Principe,Sub-Saharan Africa
+209,SV,El Salvador,Latin America & Caribbean
+210,SX,Sint Maarten,Latin America & Caribbean
+211,SY,Syria,MENA
+212,SZ,Eswatini,Sub-Saharan Africa
+213,TC,Turks and Caicos Islands,Latin America & Caribbean
+214,TD,Chad,Sub-Saharan Africa
+215,TF,French Southern Territories,Sub-Saharan Africa
+216,TG,Togo,Sub-Saharan Africa
+217,TH,Thailand,Asia
+218,TJ,Tajikistan,Asia
+219,TK,Tokelau,Oceania
+220,TL,Timor-Leste,Asia
+221,TM,Turkmenistan,Asia
+222,TN,Tunisia,MENA
+223,TO,Tonga,Oceania
+224,TR,Turkey,MENA
+225,TT,Trinidad and Tobago,Latin America & Caribbean
+226,TV,Tuvalu,Oceania
+227,TW,Taiwan,Asia
+228,TZ,Tanzania,Sub-Saharan Africa
+229,UA,Ukraine,Europe
+230,UG,Uganda,Sub-Saharan Africa
+231,UM,United States Minor Outlying Islands,Oceania
+232,US,United States,United States
+233,UY,Uruguay,Latin America & Caribbean
+234,UZ,Uzbekistan,Asia
+235,VA,Vatican City,Europe
+236,VC,Saint Vincent and the Grenadines,Latin America & Caribbean
+237,VE,Venezuela,Latin America & Caribbean
+238,VG,British Virgin Islands,Latin America & Caribbean
+239,VI,U.S. Virgin Islands,Latin America & Caribbean
+240,VN,Vietnam,Asia
+241,VU,Vanuatu,Oceania
+242,WF,Wallis and Futuna,Oceania
+243,WS,Samoa,Oceania
+244,XK,Kosovo,Europe
+245,XX,Unknown,Asia
+246,YE,Yemen,MENA
+247,YT,Mayotte,Sub-Saharan Africa
+248,ZA,South Africa,Sub-Saharan Africa
+249,ZM,Zambia,Sub-Saharan Africa
+250,ZW,Zimbabwe,Sub-Saharan Africa

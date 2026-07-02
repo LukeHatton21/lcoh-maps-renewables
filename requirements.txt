@@ -5,3 +5,5 @@ numpy>=1.26
 pandas>=2.2
 pyarrow>=16.1
 plotly>=5.22
+requests
+dask
