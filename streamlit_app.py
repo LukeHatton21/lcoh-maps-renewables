@@ -45,10 +45,10 @@ VAR_LABELS = {
     "carbon_intensity": "Carbon intensity (kgCO2/kgH2)",
     "carbon_intensity_low": "Carbon intensity low (kgCO2/kgH2)",
     "carbon_intensity_high": "Carbon intensity high (kgCO2/kgH2)",
-    "hydrogen_technical_potential": "Hydrogen technical potential",
+    "hydrogen_technical_potential": "Hydrogen technical potential (TPA)",
     "hydrogen_production": "Hydrogen production (TPA/MW)",
     "electrolyser_capacity": "Electrolyser capacity (%, MW)",
-    "renewable_electricity": "Annual electricity output (MWh per MW)",
+    "renewable_electricity": "Annual electricity output (kWh per MW)",
     "solar_costs": "Solar CAPEX for 1 MW (USD/MW)",
     "electrolyser_costs": "ElectrolyserCAPEX for 1 MW (USD/kW)",
     "renewables_costs": "Renewables CAPEX for 1 MW (USD/kW)",
@@ -826,7 +826,7 @@ with tab2:
 # TAB 3: REGIONAL SUMMARY
 # ==========================================================
 with tab3:
-    st.subheader("Regional Summary (grouped by region)")
+    st.subheader("Regional Comparison")
     if df_sf.empty:
         st.warning("No data found.")
     else:
@@ -842,24 +842,8 @@ with tab3:
             st.warning("No regional summary available.")
         else:
             st.markdown("### Regional LCOH comparison")
-
-            # Bar: mean LCOH by region
-            fig_reg_lcoh = px.bar(
-                reg_summary.sort_values("lcoh_mean"),
-                x="region",
-                y="lcoh_mean",
-                title="Mean LCOH by region",
-                labels={"lcoh_mean": "Mean LCOH (USD/kg)", "region": "Region"},
-            )
-            fig_reg_lcoh.update_layout(xaxis_tickangle=-35)
-            st.plotly_chart(fig_reg_lcoh, use_container_width=True)
-
-            st.markdown("### Cost component differences by region")
-
             # Build component summary from df_sf directly
             reg_break = regional_lcoh_component_breakdown(df_sf)
-
-            st.markdown("### Regional LCOH component breakdown (regional averages)")
 
             # Stacked absolute components
             comp_long = reg_break.melt(
@@ -873,9 +857,9 @@ with tab3:
                 value_name="lcoh_component",
             )
             comp_long["component"] = comp_long["component"].map({
-                "renewables_undiscounted_lcoh": "Renewables (undiscounted)",
-                "electrolyser_undiscounted_lcoh": "Electrolyser (undiscounted)",
-                "residual_finance_other_lcoh": "Residual (financing/other)",
+                "renewables_undiscounted_lcoh": "Renewable costs",
+                "electrolyser_undiscounted_lcoh": "Electrolyser costs",
+                "residual_finance_other_lcoh": "Financing costs",
             })
 
             fig_abs = px.bar(
@@ -884,7 +868,7 @@ with tab3:
                 y="lcoh_component",
                 color="component",
                 barmode="stack",
-                title="Regional LCOH decomposition (USD/kg)",
+                title="Contributions to the LCOH (USD/kg)",
                 labels={"lcoh_component": "LCOH component (USD/kg)", "region": "Region"},
             )
             fig_abs.update_layout(xaxis_tickangle=-35)
@@ -898,9 +882,9 @@ with tab3:
                 value_name="share",
             )
             share_long["component"] = share_long["component"].map({
-                "renewables_share": "Renewables (undiscounted)",
-                "electrolyser_share": "Electrolyser (undiscounted)",
-                "residual_share": "Residual (financing/other)",
+                "renewables_share": "Renewable costs",
+                "electrolyser_share": "Electrolyser costs",
+                "residual_share": "Financing costs",
             })
 
             fig_share = px.bar(
@@ -909,7 +893,7 @@ with tab3:
                 y="share",
                 color="component",
                 barmode="stack",
-                title="Regional LCOH decomposition share",
+                title="Contributions to the LCOH (share)",
                 labels={"share": "Share of LCOH", "region": "Region"},
             )
             fig_share.update_layout(xaxis_tickangle=-35, yaxis_tickformat=".0%")
@@ -944,11 +928,11 @@ with tab4:
                 lcoh_max = df_country["levelised_cost"].max()
 
                 c1, c2, c3, c4, c5 = st.columns(5)
-                c1.metric("LCOH min", f"{lcoh_min:.2f}")
-                c2.metric("LCOH p10", f"{lcoh_p10:.2f}")
+                c1.metric("Minimum LCOH", f"{lcoh_min:.2f}")
+                c2.metric("LCOH 10th percentile", f"{lcoh_p10:.2f}")
                 c3.metric("LCOH median", f"{lcoh_p50:.2f}")
-                c4.metric("LCOH p90", f"{lcoh_p90:.2f}")
-                c5.metric("LCOH max", f"{lcoh_max:.2f}")
+                c4.metric("LCOH 90th percentile", f"{lcoh_p90:.2f}")
+                c5.metric("Maximum LCOH", f"{lcoh_max:.2f}")
 
                 # ---- subset map (auto-zoom to country extent) ----
                 lat_c = float(df_country["latitude"].mean())
@@ -985,7 +969,7 @@ with tab4:
                         center={"lat": lat_c, "lon": lon_c},
                         zoom=4,
                         opacity=0.65,
-                        title=f"{selected_country}: exact lat/lon grid cells",
+                        title=f"{selected_country}: LCOH distribution",
                         height=700,
                     )
                     fig_cells.update_layout(mapbox_style="carto-positron", margin=dict(l=0, r=0, t=40, b=0))
