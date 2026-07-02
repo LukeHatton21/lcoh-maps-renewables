@@ -1,0 +1,251 @@
+﻿country,name,index,Country,Region,Onshore_Wind_Cost,Solar_Cost,wind_costs_usd_kw,solar_costs_usd_kw,Offshore_CAPEX
+AD,Andorra,1,Andorra,Europe,,,1659,779,2852
+AE,United Arab Emirates,2,United Arab Emirates,Middle East,,,1041,691,2852
+AF,Afghanistan,3,Afghanistan,Other Asia,,,1912,1133,2852
+AG,Antigua and Barbuda,4,Antigua and Barbuda,Central America & the Caribbean,,,2108,1375,2852
+AI,Anguilla,5,Anguilla,Central America & the Caribbean,,,2108,1375,2852
+AL,Albania,6,Albania,Europe,,,1659,779,2852
+AM,Armenia,7,Armenia,Other,,,1041,691,2852
+AO,Angola,8,Angola,Africa,,,1333,1093,2852
+AR,Argentina,9,Argentina,Other South America,1669,895,1669,895,2852
+AS,American Samoa,10,American Samoa,Other,,,1041,691,2852
+AT,Austria,11,Austria,Europe,1702,,1702,779,2852
+AU,Australia,12,Australia,Oceania,1381,944,1381,944,2852
+AW,Aruba,13,Aruba,Central America & the Caribbean,,,2108,1375,2852
+AX,Aland Islands,14,Aland Islands,Other,,,1041,691,2852
+AZ,Azerbaijan,15,Azerbaijan,Other,,,1041,691,2852
+BA,Bosnia and Herzegovina,16,Bosnia and Herzegovina,Europe,,,1659,779,2852
+BB,Barbados,17,Barbados,Central America & the Caribbean,,,2108,1375,2852
+BD,Bangladesh,18,Bangladesh,Other Asia,,,1912,1133,2852
+BE,Belgium,19,Belgium,Europe,,,1659,779,2852
+BF,Burkina Faso,20,Burkina Faso,Africa,,,1333,1093,2852
+BG,Bulgaria,21,Bulgaria,Europe,,,1659,779,2852
+BH,Bahrain,22,Bahrain,Middle East,,,1041,691,2852
+BI,Burundi,23,Burundi,Africa,,,1333,1093,2852
+BJ,Benin,24,Benin,Africa,,,1333,1093,2852
+BL,Saint Barthélemy,25,Saint Barthélemy,Other,,,1041,691,2852
+BM,Bermuda,26,Bermuda,Central America & the Caribbean,,,2108,1375,2852
+BN,Brunei Darussalam,27,Brunei Darussalam,Other Asia,,,1912,1133,2852
+BO,Bolivia,28,Bolivia,Other South America,,,1492,1048,2852
+BQ,"Bonaire, Sint Eustatius and Saba",29,"Bonaire, Sint Eustatius and Saba",Central America & the Caribbean,,,2108,1375,2852
+BR,Brazil,30,Brazil,Brazil,1307,724,1307,724,2852
+BS,Bahamas,31,Bahamas,Central America & the Caribbean,,,2108,1375,2852
+BT,Bhutan,32,Bhutan,Other Asia,,,1912,1133,2852
+BV,Bouvet Island,33,Bouvet Island,Other,,,1041,691,2852
+BW,Botswana,34,Botswana,Africa,,,1333,1093,2852
+BY,Belarus,35,Belarus,Other,,,1041,691,2852
+BZ,Belize,36,Belize,Central America & the Caribbean,,,2108,1375,2852
+CA,Canada,37,Canada,North America,1238,1213,1238,1213,2852
+CC,Cocos (Keeling) Islands,38,Cocos (Keeling) Islands,Other,,,1041,691,2852
+CD,"Congo, The Democratic Republic of ",39,"Congo, The Democratic Republic of",Africa,,,1333,1093,2852
+CF,Central African Republic,40,Central African Republic,Africa,,,1333,1093,2852
+CG,Congo,41,Congo,Africa,,,1333,1093,2852
+CH,Switzerland,42,Switzerland,Europe,,,1659,779,2852
+CI,Cote d'Ivoire,43,Cote d'Ivoire,Africa,,,1333,1093,2852
+CK,Cook Islands,44,Cook Islands,Other,,,1041,691,2852
+CL,Chile,45,Chile,Other South America,1313,,1313,1048,2852
+CM,Cameroon,46,Cameroon,Africa,,,1333,1093,2852
+CN,China,47,China,China,856,591,856,591,2852
+CO,Colombia,48,Colombia,Other South America,,,1492,1048,2852
+CR,Costa Rica,49,Costa Rica,Central America & the Caribbean,,,2108,1375,2852
+CU,Cuba,50,Cuba,Central America & the Caribbean,,,2108,1375,2852
+CV,Cape Verde,51,Cape Verde,Africa,,,1333,1093,2852
+CW,Curaçao,52,Cura√ßao,Central America & the Caribbean,,,2108,1375,2852
+CX,Christmas Island,53,Christmas Island,Other,,,1041,691,2852
+CY,Cyprus,54,Cyprus,Europe,,,1659,779,2852
+CZ,Czechia,55,Czechia,Europe,,,1659,779,2852
+DE,Germany,56,Germany,Europe,1670,593,1670,593,2852
+DJ,Djibouti,57,Djibouti,Africa,,,1333,1093,2852
+DK,Denmark,58,Denmark,Europe,,,1659,779,2852
+DM,Dominica,59,Dominica,Central America & the Caribbean,,,2108,1375,2852
+DO,Dominican Republic,60,Dominican Republic,Central America & the Caribbean,2108,,2108,1375,2852
+DZ,Algeria,61,Algeria,Africa,,,1333,1093,2852
+EC,Ecuador,62,Ecuador,Other South America,,,1492,1048,2852
+EE,Estonia,63,Estonia,Europe,,,1659,779,2852
+EG,Egypt,64,Egypt,Africa,1435,,1435,1093,2852
+EH,Western Sahara,65,Western Sahara,Africa,,,1333,1093,2852
+ER,Eritrea,66,Eritrea,Africa,,,1333,1093,2852
+ES,Spain,67,Spain,Europe,1399,822,1399,822,2852
+ET,Ethiopia,68,Ethiopia,Africa,2273,,2273,1093,2852
+FI,Finland,69,Finland,Europe,1424,,1424,779,2852
+FJ,Fiji,70,Fiji,Oceania,,,1363,944,2852
+FK,Falkland Islands (Malvinas),71,Falkland Islands (Malvinas),Other,,,1041,691,2852
+FM,"Micronesia, Federated States of",72,"Micronesia, Federated States of",Oceania,,,1363,944,2852
+FO,Faroe Islands,73,Faroe Islands,Other,,,1041,691,2852
+FR,France,74,France,Europe,1860,1104,1860,1104,2852
+GA,Gabon,75,Gabon,Africa,,,1333,1093,2852
+GB,United Kingdom,76,United Kingdom,Europe,1926,,1926,779,2852
+GD,Grenada,77,Grenada,Central America & the Caribbean,,,2108,1375,2852
+GE,Georgia,78,Georgia,Other,,,1041,691,2852
+GF,French Guiana,79,French Guiana,Other South America,,,1492,1048,2852
+GG,Guernsey,80,Guernsey,Europe,,,1659,779,2852
+GH,Ghana,81,Ghana,Africa,,,1333,1093,2852
+GI,Gibraltar,82,Gibraltar,Europe,,,1659,779,2852
+GL,Greenland,83,Greenland,Other North America,,,1238,1206,2852
+GM,Gambia,84,Gambia,Africa,,,1333,1093,2852
+GN,Guinea,85,Guinea,Africa,,,1333,1093,2852
+GP,Guadeloupe,86,Guadeloupe,Other,,,1041,691,2852
+GQ,Equatorial Guinea,87,Equatorial Guinea,Africa,,,1333,1093,2852
+GR,Greece,88,Greece,Europe,1967,566,1967,566,2852
+GS,South Georgia & The South Sandwich Islands,89,South Georgia & The South Sandwich Islands,Other,,,1041,691,2852
+GT,Guatemala,90,Guatemala,Central America & the Caribbean,,,2108,1375,2852
+GU,Guam,91,Guam,Other,,,1041,691,2852
+GW,Guinea-Bissau,92,Guinea-Bissau,Africa,,,1333,1093,2852
+GY,Guyana,93,Guyana,Other South America,,,1492,1048,2852
+HK,Hong Kong,94,China,China,856,591,856,591,2852
+HM,Heard and Mc Donald Islands,95,Heard and Mc Donald Islands,Other,,,1041,691,2852
+HN,Honduras,96,Honduras,Central America & the Caribbean,,,2108,1375,2852
+HR,Croatia,97,Croatia,Europe,1559,,1559,779,2852
+HT,Haiti,98,Haiti,Central America & the Caribbean,,,2108,1375,2852
+HU,Hungary,99,Hungary,Europe,,,1659,779,2852
+ID,Indonesia,100,Indonesia,Other Asia,,601,1912,601,2852
+IE,Ireland,101,Ireland,Europe,1605,,1605,779,2852
+IL,Israel,102,Israel,Middle East,,,1041,691,2852
+IM,Isle of Man,103,Isle of Man,Europe,,,1659,779,2852
+IN,India,104,India,India,1110,525,1110,525,2852
+IO,British Indian Ocean Territory,105,British Indian Ocean Territory,Other,,,1041,691,2852
+IQ,Iraq,106,Iraq,Middle East,,,1041,691,2852
+IR,"Iran, Islamic Republic of",107,"Iran, Islamic Republic of",Middle East,,,1041,691,2852
+IS,Iceland,108,Iceland,Europe,,,1659,779,2852
+IT,Italy,109,Italy,Europe,1408,804,1408,804,2852
+JE,Jersey,110,Jersey,Europe,,,1659,779,2852
+JM,Jamaica,111,Jamaica,Central America & the Caribbean,,,2108,1375,2852
+JO,Jordan,112,Jordan,Middle East,,,1041,691,2852
+JP,Japan,113,Japan,Other Asia,2891,1911,2891,1911,2852
+KE,Kenya,114,Kenya,Africa,,,1333,1093,2852
+KG,Kyrgyzstan,115,Kyrgyzstan,Other,,,1041,691,2852
+KH,Cambodia,116,Cambodia,Other Asia,,,1912,1133,2852
+KI,Kiribati,117,Kiribati,Oceania,,,1363,944,2852
+KM,Comoros,118,Comoros,Africa,,,1333,1093,2852
+KN,Saint Kitts & Nevis,119,Saint Kitts & Nevis,Central America & the Caribbean,,,2108,1375,2852
+KP,"Korea, Democratic People's Republic of",120,"Korea, Democratic People's Republic of",Other Asia,,,1912,1133,2852
+KR,"Korea, Republic of",121,"Korea, Republic of",Other Asia,,,1912,1133,2852
+KW,Kuwait,122,Kuwait,Middle East,,,1041,691,2852
+KY,Cayman Islands,123,Cayman Islands,Central America & the Caribbean,,,2108,1375,2852
+KZ,Kazakstan,124,Kazakstan,Other,,,1041,691,2852
+LA,"Lao, People's Democratic Republic",125,"Lao, People's Democratic Republic",Other Asia,,,1912,1133,2852
+LB,Lebanon,126,Lebanon,Middle East,,,1041,691,2852
+LC,Saint Lucia,127,Saint Lucia,Central America & the Caribbean,,,2108,1375,2852
+LI,Liechtenstein,128,Liechtenstein,Europe,,,1659,779,2852
+LK,Sri Lanka,129,Sri Lanka,Other Asia,,,1912,1133,2852
+LR,Liberia,130,Liberia,Africa,,,1333,1093,2852
+LS,Lesotho,131,Lesotho,Africa,,,1333,1093,2852
+LT,Lithuania,132,Lithuania,Europe,,,1659,779,2852
+LU,Luxembourg,133,Luxembourg,Europe,,,1659,779,2852
+LV,Latvia,134,Latvia,Europe,,,1659,779,2852
+LY,Libyan Arab Jamahiriya,135,Libyan Arab Jamahiriya,Africa,,,1333,1093,2852
+MA,Morocco,136,Morocco,Africa,1216,,1216,1093,2852
+MC,Monaco,137,Monaco,Europe,,,1659,779,2852
+MD,"Moldova, Republic of",138,"Moldova, Republic of",Europe,,,1659,779,2852
+ME,Montenegro,139,Montenegro,Europe,,,1659,779,2852
+MF,Saint Martin,140,Saint Martin,Other,,,1041,691,2852
+MG,Madagascar,141,Madagascar,Africa,,,1333,1093,2852
+MH,Marshall Islands,142,Marshall Islands,Oceania,,,1363,944,2852
+MK,"Macedonia, The Former Yugoslav Republic Of",143,"Macedonia, The Former Yugoslav Republic Of",Europe,,,1659,779,2852
+ML,Mali,144,Mali,Africa,,,1333,1093,2852
+MM,Myanmar,145,Myanmar,Other Asia,,,1912,1133,2852
+MN,Mongolia,146,Mongolia,Other Asia,,,1912,1133,2852
+MO,Macao,147,China,China,856,591,856,591,2852
+MP,Northern Mariana Islands,148,Northern Mariana Islands,Other,,,1041,691,2852
+MQ,Martinique,149,Martinique,Other,,,1041,691,2852
+MR,Mauritania,150,Mauritania,Africa,,,1333,1093,2852
+MS,Montserrat,151,Montserrat,Other,,,1041,691,2852
+MT,Malta,152,Malta,Europe,,,1659,779,2852
+MU,Mauritius,153,Mauritius,Africa,,,1333,1093,2852
+MV,Maldives,154,Maldives,Other Asia,,,1912,1133,2852
+MW,Malawi,155,Malawi,Africa,,,1333,1093,2852
+MX,Mexico,156,Mexico,Other North America,1614,,1614,1206,2852
+MY,Malaysia,157,Malaysia,Other Asia,,,1912,1133,2852
+MZ,Mozambique,158,Mozambique,Africa,,,1333,1093,2852
+NA,Namibia,159,Namibia,Africa,,,1333,1093,2852
+NC,New Caledonia,160,New Caledonia,Other,,,1041,691,2852
+NE,Niger,161,Niger,Africa,,,1333,1093,2852
+NF,Norfolk Island,162,Norfolk Island,Other,,,1041,691,2852
+NG,Nigeria,163,Nigeria,Africa,,,1333,1093,2852
+NI,Nicaragua,164,Nicaragua,Central America & the Caribbean,,,2108,1375,2852
+NL,Netherlands,165,Netherlands,Europe,1685,641,1685,641,2852
+NO,Norway,166,Norway,Europe,,,1659,779,2852
+NP,Nepal,167,Nepal,Other Asia,,,1912,1133,2852
+NR,Nauru,168,Nauru,Oceania,,,1363,944,2852
+NU,Niue,169,Niue,Other,,,1041,691,2852
+NZ,New Zealand,170,New Zealand,Oceania,1162,,1162,944,2852
+OM,Oman,171,Oman,Middle East,,,1041,691,2852
+PA,Panama,172,Panama,Central America & the Caribbean,,,2108,1375,2852
+PE,Peru,173,Peru,Other South America,1065,,1065,1048,2852
+PF,French Polynesia,174,French Polynesia,Other,,,1041,691,2852
+PG,Papua New Guinea,175,Papua New Guinea,Oceania,,,1363,944,2852
+PH,Philippines,176,Philippines,Other Asia,2325,,2325,1133,2852
+PK,Pakistan,177,Pakistan,Other Asia,1321,,1321,1133,2852
+PL,Poland,178,Poland,Europe,1838,872,1838,872,2852
+PM,Saint Pierre and Miquelon,179,Saint Pierre and Miquelon,Other,,,1041,691,2852
+PN,Pitcairn,180,Pitcairn,Other,,,1041,691,2852
+PR,Puerto Rico,181,Puerto Rico,Other,,,1041,691,2852
+PS,"Palestinian Territory, Occupied",182,"Palestinian Territory, Occupied",Middle East,,,1041,691,2852
+PT,Portugal,183,Portugal,Europe,,,1659,779,2852
+PW,Palau,184,Palau,Oceania,,,1363,944,2852
+PY,Paraguay,185,Paraguay,Other South America,,,1492,1048,2852
+QA,Qatar,186,Qatar,Middle East,,,1041,691,2852
+RE,Reunion,187,Reunion,Other,,,1041,691,2852
+RO,Romania,188,Romania,Europe,,,1659,779,2852
+RS,Republic of Serbia,189,Republic of Serbia,Europe,,,1659,779,2852
+RU,Russia Federation,190,Russia Federation,Eurasia,,,1425,1030,2852
+RW,Rwanda,191,Rwanda,Africa,,,1333,1093,2852
+SA,Saudi Arabia,192,Saudi Arabia,Middle East,,,1041,691,2852
+SB,Solomon Islands,193,Solomon Islands,Oceania,,,1363,944,2852
+SC,Seychelles,194,Seychelles,Africa,,,1333,1093,2852
+SD,Sudan,195,Sudan,Africa,,,1333,1093,2852
+SE,Sweden,196,Sweden,Europe,1773,,1773,779,2852
+SG,Singapore,197,Singapore,Other Asia,,,1912,1133,2852
+SH,Saint Helena,198,Saint Helena,Other,,,1041,691,2852
+SI,Slovenia,199,Slovenia,Europe,,,1659,779,2852
+SJ,Svalbard and Jan Mayen,200,Svalbard and Jan Mayen,Other,,,1041,691,2852
+SK,Slovakia,201,Slovakia,Europe,,,1659,779,2852
+SL,Sierra Leone,202,Sierra Leone,Africa,,,1333,1093,2852
+SM,San Marino,203,San Marino,Europe,,,1659,779,2852
+SN,Senegal,204,Senegal,Africa,,,1333,1093,2852
+SO,Somalia,205,Somalia,Africa,,,1333,1093,2852
+SR,Suriname,206,Suriname,Other South America,,,1492,1048,2852
+SS,South Sudan,207,South Sudan,Africa,,,1333,1093,2852
+ST,Sao Tome and Principe,208,Sao Tome and Principe,Africa,,,1333,1093,2852
+SV,El Salvador,209,El Salvador,Central America & the Caribbean,,,2108,1375,2852
+SX,Sint Maarten,210,Sint Maarten,Other,,,1041,691,2852
+SY,Syrian Arab Republic,211,Syrian Arab Republic,Middle East,,,1041,691,2852
+SZ,Swaziland,212,Swaziland,Africa,,,1333,1093,2852
+TC,Turks and Caicos Islands,213,Turks and Caicos Islands,Other,,,1041,691,2852
+TD,Chad,214,Chad,Africa,,,1333,1093,2852
+TF,French Southern Territories,215,French Southern Territories,Other,,,1041,691,2852
+TG,Togo,216,Togo,Africa,,,1333,1093,2852
+TH,Thailand,217,Thailand,Other Asia,,,1912,1133,2852
+TJ,Tajikistan,218,Tajikistan,Other,,,1041,691,2852
+TK,Tokelau,219,Tokelau,Other,,,1041,691,2852
+TL,Timor-Leste,220,Timor-Leste,Other Asia,,,1912,1133,2852
+TM,Turkmenistan,221,Turkmenistan,Other,,,1041,691,2852
+TN,Tunisia,222,Tunisia,Africa,,,1333,1093,2852
+TO,Tonga,223,Tonga,Oceania,,,1363,944,2852
+TR,Turkey,224,Turkey,Middle East,1424,,1424,691,2852
+TT,Trinidad and Tobago,225,Trinidad and Tobago,Central America & the Caribbean,,,2108,1375,2852
+TV,Tuvalu,226,Tuvalu,Oceania,,,1363,944,2852
+TW,"Taiwan, Province of China",227,China,China,856,591,856,591,2852
+TZ,"Tanzania, United Republic of",228,"Tanzania, United Republic of",Africa,,,1333,1093,2852
+UA,Ukraine,229,Ukraine,Eurasia,1642,,1642,1030,2852
+UG,Uganda,230,Uganda,Africa,,,1333,1093,2852
+UM,United States Minor Outlying Islands,231,United States Minor Outlying Islands,Other,,,1041,691,2852
+US,United States,232,United States,North America,1568,1058,1568,1058,2852
+UY,Uruguay,233,Uruguay,Other South America,,,1492,1048,2852
+UZ,Uzbekistan,234,Uzbekistan,Other,,,1041,691,2852
+VA,Holy See (Vatican City State),235,Holy See (Vatican City State),Europe,,,1659,779,2852
+VC,Saint Vincent and the Grenadines,236,Saint Vincent and the Grenadines,Central America & the Caribbean,,,2108,1375,2852
+VE,Venezuela,237,Venezuela,Other South America,,,1492,1048,2852
+VG,"Virgin Islands, British",238,"Virgin Islands, British",Other,,,1041,691,2852
+VI,"Virgin Islands, U.S.",239,"Virgin Islands, U.S.",Other,,,1041,691,2852
+VN,Vietnam,240,Vietnam,Other Asia,,,1912,1133,2852
+VU,Vanuatu,241,Vanuatu,Oceania,,,1363,944,2852
+WF,Wallis and Futuna,242,Wallis and Futuna,Other,,,1041,691,2852
+WS,Samoa,243,Samoa,Oceania,,,1363,944,2852
+XK,Kosovo (temporary code),244,Kosovo (temporary code),Europe,,,1659,779,2852
+XX,#N/A,245,#N/A,Other,,,1041,691,2852
+YE,Yemen,246,Yemen,Middle East,,,1041,691,2852
+YT,Mayotte,247,Mayotte,Other,,,1041,691,2852
+ZA,South Africa,248,South Africa,Africa,1773,,1773,1093,2852
+ZM,Zambia,249,Zambia,Africa,,,1333,1093,2852
+ZW,Zimbabwe,250,Zimbabwe,Africa,,,1333,1093,2852

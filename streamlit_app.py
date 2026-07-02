@@ -19,6 +19,9 @@ st.caption("Explore spatial variation in LCOH, capacity, and carbon intensity fo
 PEM_URL = os.getenv("PEM_URL", "")
 ALK_URL = os.getenv("ALK_URL", "")
 
+PEM_URL = "https://www.dropbox.com/scl/fi/vzcuxj5znytwuhzz207iv/PEM_COLLATED_RESULTS.nc?rlkey=z9heh3eums23uxcrgw9pspzck&st=v8ku4dpx&dl=1"
+ALK_URL = "https://www.dropbox.com/scl/fi/fy0c1qp70r64cjy3hxe1k/ALK_COLLATED_RESULTS.nc?rlkey=5pt5amo1ocbsanzne1is4nq2x&st=bghmbym3&dl=1"
+
 try:
     PEM_URL = st.secrets.get("PEM_URL", PEM_URL)
     ALK_URL = st.secrets.get("ALK_URL", ALK_URL)
@@ -43,10 +46,12 @@ VAR_LABELS = {
     "carbon_intensity_low": "Carbon intensity low (kgCO2/kgH2)",
     "carbon_intensity_high": "Carbon intensity high (kgCO2/kgH2)",
     "hydrogen_technical_potential": "Hydrogen technical potential",
-    "electrolyser_capacity": "Electrolyser capacity (MW)",
+    "hydrogen_production": "Hydrogen production (TPA/MW)",
+    "electrolyser_capacity": "Electrolyser capacity (%, MW)",
+    "renewable_electricity": "Annual electricity output (MWh per MW)",
     "solar_costs": "Solar CAPEX for 1 MW (USD/MW)",
-    "wind_costs": "Wind CAPEX for 1 MW (USD/MW)",
-    "renewables_costs": "Renewables CAPEX for 1 MW (USD/MW)",
+    "electrolyser_costs": "ElectrolyserCAPEX for 1 MW (USD/kW)",
+    "renewables_costs": "Renewables CAPEX for 1 MW (USD/kW)",
 }
 LABEL_TO_VAR = {v: k for k, v in VAR_LABELS.items()}
 
@@ -80,7 +85,7 @@ def _download_if_missing(url: str, out_path: Path) -> Path:
 @st.cache_resource(show_spinner=False)
 def _load_nc(tech: str) -> xr.Dataset:
     tech = tech.lower()
-    if tech == "pem":
+    if tech == "PEM":
         fp = _download_if_missing(PEM_URL, DATA_DIR / "pem.nc")
     else:
         fp = _download_if_missing(ALK_URL, DATA_DIR / "alkaline.nc")
@@ -118,6 +123,38 @@ def load_country_mapping() -> pd.DataFrame:
     cm = cm.dropna(subset=["country_id"]).drop_duplicates(subset=["country_id"])
     return cm
 
+@st.cache_data(show_spinner=False)
+def load_cost_mapping() -> pd.DataFrame:
+    fp = DATA_DIR / "IRENA_Country_Costs_2024.csv"
+    if not fp.exists():
+        return pd.DataFrame(columns=["index", "solar_costs_usd_kw", "wind_costs_usd_kw"])
+
+    cm = pd.read_csv(fp)
+
+    # flexible column names
+    cols = {c.lower(): c for c in cm.columns}
+    id_col = cols.get("index") 
+    solar_col = cols.get("solar_costs_usd_kw")
+    wind_col = cols.get("wind_costs_usd_kw")
+
+    if not id_col or not solar_col or not wind_col:
+        return pd.DataFrame(columns=["index", "solar_costs_usd_kw", "wind_costs_usd_kw"])
+
+    cm = cm[[id_col, solar_col, wind_col]].copy()
+    cm.columns = ["country_id", "solar_costs_usd_kw", "wind_costs_usd_kw"]
+    inflation_2025 = 1.05
+
+    cm["country_id"] = pd.to_numeric(cm["country_id"], errors="coerce").astype("Int64")
+    cm["solar_costs_usd_kw"] = pd.to_numeric(cm["solar_costs_usd_kw"], errors="coerce").astype("Int64")
+    cm["wind_costs_usd_kw"] = pd.to_numeric(cm["wind_costs_usd_kw"], errors="coerce").astype("Int64")
+
+    # Convert to 2025 terms
+    cm["solar_costs_usd_kw"] = cm["solar_costs_usd_kw"]*inflation_2025
+    cm["wind_costs_usd_kw"] = cm["wind_costs_usd_kw"]*inflation_2025
+
+    cm = cm.dropna(subset=["country_id"]).drop_duplicates(subset=["country_id"])
+    return cm
+
 def regional_lcoh_component_breakdown(
     df: pd.DataFrame,
     lifetime_years: int = 20,
@@ -144,6 +181,7 @@ def regional_lcoh_component_breakdown(
         "hydrogen_production",
         "solar_costs",
         "wind_costs",
+        "renewables_costs",
         "electrolyser_costs",
     ]
     missing = [c for c in req if c not in df.columns]
@@ -157,6 +195,7 @@ def regional_lcoh_component_breakdown(
     # Fill missing CAPEX terms with 0 for component calc
     for c in ["solar_costs", "wind_costs", "electrolyser_costs"]:
         d[c] = pd.to_numeric(d[c], errors="coerce").fillna(0.0)
+    #d["wind_costs"] = d["renewables_costs"] - d["solar_costs"]
 
     # Regional averages first (as requested)
     reg = (
@@ -293,10 +332,99 @@ def build_cell_geojson(
     geojson = {"type": "FeatureCollection", "features": features}
     return geojson, d
 
-
-def apply_country_mapping(df: pd.DataFrame, cm: pd.DataFrame) -> pd.DataFrame:
+def regional_lcoh_component_breakdown(
+    df: pd.DataFrame,
+    lifetime_years: int = 20,
+    elec_om_frac: float = 0.03,
+    solar_om_frac: float = 0.023,
+    wind_om_frac: float = 0.026,
+) -> pd.DataFrame:
     """
-    Map numeric country ID in NetCDF to country_name + region from CSV.
+    Regional-average LCOH breakdown:
+      - renewables_undiscounted_lcoh
+      - electrolyser_undiscounted_lcoh
+      - residual_finance_other_lcoh
+
+    Assumptions:
+      - solar_costs, wind_costs, electrolyser_costs are CAPEX terms per site basis
+      - annual O&M = fraction * CAPEX
+      - lifetime = 20 years
+      - hydrogen_production is annual production (same basis as your LCOH denominator)
+    """
+
+    req = [
+        "region",
+        "levelised_cost",
+        "hydrogen_production",
+        "solar_costs",
+        "wind_costs",
+        "electrolyser_costs",
+    ]
+    missing = [c for c in req if c not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
+
+    d = df.copy()
+    d = d.dropna(subset=["region", "levelised_cost", "hydrogen_production"])
+    d = d[d["hydrogen_production"] > 0]
+
+    # Fill missing CAPEX terms with 0 for component calc
+    for c in ["solar_costs", "wind_costs", "electrolyser_costs"]:
+        d[c] = pd.to_numeric(d[c], errors="coerce").fillna(0.0)
+
+    # Regional averages first (as requested)
+    reg = (
+        d.groupby("region", as_index=False)
+        .agg(
+            lcoh_mean=("levelised_cost", "mean"),
+            hydrogen_production_mean=("hydrogen_production", "mean"),
+            solar_costs_mean=("solar_costs", "mean"),
+            wind_costs_mean=("wind_costs", "mean"),
+            electrolyser_costs_mean=("electrolyser_costs", "mean"),
+        )
+    )
+
+    # Undiscounted lifetime costs
+    reg["renewables_capex_mean"] = reg["solar_costs_mean"] + reg["wind_costs_mean"]
+    reg["renewables_annual_om_mean"] = (
+        solar_om_frac * reg["solar_costs_mean"] + wind_om_frac * reg["wind_costs_mean"]
+    )
+    reg["renewables_total_lifetime_cost_mean"] = (
+        reg["renewables_capex_mean"] + lifetime_years * reg["renewables_annual_om_mean"]
+    )
+
+    reg["electrolyser_annual_om_mean"] = elec_om_frac * reg["electrolyser_costs_mean"]
+    reg["electrolyser_total_lifetime_cost_mean"] = (
+        reg["electrolyser_costs_mean"] + lifetime_years * reg["electrolyser_annual_om_mean"]
+    )
+
+    reg["hydrogen_lifetime_mean"] = lifetime_years * reg["hydrogen_production_mean"]
+
+    # Convert to LCOH components
+    reg["renewables_undiscounted_lcoh"] = (
+        reg["renewables_total_lifetime_cost_mean"] / reg["hydrogen_lifetime_mean"] / 1000
+    )
+    reg["electrolyser_undiscounted_lcoh"] = (
+        reg["electrolyser_total_lifetime_cost_mean"] / reg["hydrogen_lifetime_mean"] / 1000
+    )
+
+    reg["undiscounted_sum_lcoh"] = (
+        reg["renewables_undiscounted_lcoh"] + reg["electrolyser_undiscounted_lcoh"]
+    )
+
+    # residual to observed mean LCOH
+    reg["residual_finance_other_lcoh"] = reg["lcoh_mean"] - reg["undiscounted_sum_lcoh"]
+
+    # shares
+    reg["renewables_share"] = reg["renewables_undiscounted_lcoh"] / reg["lcoh_mean"]
+    reg["electrolyser_share"] = reg["electrolyser_undiscounted_lcoh"] / reg["lcoh_mean"]
+    reg["residual_share"] = reg["residual_finance_other_lcoh"] / reg["lcoh_mean"]
+
+    return reg.sort_values("lcoh_mean")
+
+def apply_country_mapping(df: pd.DataFrame, cm: pd.DataFrame, costs: pd.DataFrame) -> pd.DataFrame:
+    """
+    Map numeric country ID in NetCDF to country_name + region + costs from CSV.
     """
     out = df.copy()
     if out.empty or cm.empty:
@@ -328,6 +456,9 @@ def apply_country_mapping(df: pd.DataFrame, cm: pd.DataFrame) -> pd.DataFrame:
         out["country_name"] = "Unknown"
     out["country_name"] = out["country_name"].fillna("Unknown").astype("string")
 
+    # Merge cost onto output
+    out = out.merge(costs[["country_id", "solar_costs_usd_kw", "wind_costs_usd_kw"]], how="left", suffixes=("", "_costs"))
+
     return out
 
 
@@ -348,10 +479,13 @@ def load_points_slice_from_nc(tech: str, solar_fraction: int, columns: list[str]
         "carbon_intensity_low": np.nan,
         "carbon_intensity_high": np.nan,
         "hydrogen_technical_potential": np.nan,
+        "hydrogen_production": np.nan,
+        "renewable_electricity": np.nan,
         "electrolyser_capacity": np.nan,
         "solar_costs": np.nan,
-        "wind_costs": np.nan,
+        "electrolyser_costs": np.nan,
         "renewables_costs": np.nan,
+        "wind_costs": np.nan,
         "levelised_cost": np.nan,
         "levelised_cost_ren": np.nan,
         "levelised_cost_elec": np.nan,
@@ -360,16 +494,13 @@ def load_points_slice_from_nc(tech: str, solar_fraction: int, columns: list[str]
         if c not in df.columns:
             df[c] = d
 
-    # unit conversion: USD/MW -> USD/kW
-    if "solar_costs" in df.columns:
-        df["solar_costs_usd_kw"] = pd.to_numeric(df["solar_costs"], errors="coerce") / 1000.0
-    if "wind_costs" in df.columns:
-        df["wind_costs_usd_kw"] = pd.to_numeric(df["wind_costs"], errors="coerce") / 1000.0
+    # Convert electrolyser ratio
+    df["electrolyser_capacity"] = df["electrolyser_capacity"] * 100
 
     numeric_cols = [
         "latitude", "longitude", "levelised_cost", "levelised_cost_ren", "levelised_cost_elec",
         "solar_costs", "wind_costs", "renewables_costs", "carbon_intensity", "carbon_intensity_low",
-        "carbon_intensity_high", "hydrogen_technical_potential", "electrolyser_capacity",
+        "carbon_intensity_high", "hydrogen_technical_potential", "electrolyser_capacity", "renewable_electricity", "hydrogen_production",
         "solar_costs_usd_kw", "wind_costs_usd_kw",
     ]
     for c in numeric_cols:
@@ -386,7 +517,9 @@ def load_points_slice_from_nc(tech: str, solar_fraction: int, columns: list[str]
 def change_capex_absolute_df(
     df: pd.DataFrame,
     solar_capex: float,
+    solar_capex_original: float,
     wind_capex: float,
+    wind_capex_original: float,
     elec_capex: float,
     initial_capex: float,
 ) -> pd.DataFrame:
@@ -400,8 +533,8 @@ def change_capex_absolute_df(
     solar_costs_frac = solar_costs_frac.replace([np.inf, -np.inf], np.nan).fillna(0.0)
 
     new_ren_lcoh = (
-        (1 - solar_costs_frac) * ren_lcoh * (1 + (wind_capex - 1500) / 1500)
-        + solar_costs_frac * ren_lcoh * (1 + (solar_capex - 990) / 990)
+        (1 - solar_costs_frac) * ren_lcoh * (1 + (wind_capex - wind_capex_original) / wind_capex_original)
+        + solar_costs_frac * ren_lcoh * (1 + (solar_capex - solar_capex_original) / solar_capex_original)
     )
     new_elec_lcoh = elec_lcoh * (1 + (elec_capex - initial_capex) / initial_capex)
 
@@ -439,7 +572,7 @@ def summarize_group(df: pd.DataFrame, group_col: str, lcoh_col: str = "levelised
 # ---------------------------
 with st.sidebar:
     st.header("Global Controls")
-    tech = st.selectbox("Electrolyser Technology", ["alkaline", "pem"], index=0)
+    tech = st.selectbox("Electrolyser Technology", ["Alkaline", "PEM"], index=0)
     solar_fraction = st.select_slider(
         "Solar Fraction (%)",
         options=[0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
@@ -457,6 +590,9 @@ needed_cols = [
     "solar_costs",
     "wind_costs",
     "renewables_costs",
+    "renewable_electricity",
+    "hydrogen_production",
+    "electrolyser_costs",
     "carbon_intensity",
     "carbon_intensity_low",
     "carbon_intensity_high",
@@ -468,7 +604,8 @@ with st.spinner("Downloading/loading underlying data..."):
     df_sf = load_points_slice_from_nc(tech=tech, solar_fraction=solar_fraction, columns=needed_cols)
 
 country_map = load_country_mapping()
-df_sf = apply_country_region_mapping(df_sf, country_map)
+cost_mapping = load_cost_mapping()
+df_sf = apply_country_mapping(df_sf, country_map, cost_mapping)
 
 if not df_sf.empty:
     df_sf = df_sf.dropna(subset=["levelised_cost"], how="all")
@@ -489,11 +626,11 @@ with tab1:
         metric_label = st.selectbox(
             "Map metric",
             options=[
-                VAR_LABELS["electrolyser_capacity"],  # requested addition + default
                 VAR_LABELS["levelised_cost"],
+                VAR_LABELS["hydrogen_production"],
+                VAR_LABELS["renewable_electricity"],
+                VAR_LABELS["electrolyser_capacity"],  # requested addition + default,
                 VAR_LABELS["carbon_intensity"],
-                VAR_LABELS["levelised_cost_ren"],
-                VAR_LABELS["levelised_cost_elec"],
                 VAR_LABELS["hydrogen_technical_potential"],
             ],
             index=0,
@@ -525,18 +662,25 @@ with tab1:
                 lon="longitude",
                 color=metric,
                 color_continuous_scale=color_scale,
-                range_color=(q_low, q_hi) if np.isfinite(q_low) and np.isfinite(q_hi) else None,
+                range_color=(0, q_hi) if np.isfinite(q_low) and np.isfinite(q_hi) else None,
+                labels={metric: metric_label},
                 hover_data={
                     "region": True,
                     "country": True if "country" in df_map.columns else False,
-                    "electrolyser_capacity": ":.3f",
-                    "levelised_cost": ":.3f",
-                    "carbon_intensity": ":.3f",
+                     metric: ":.3f",
                     "latitude": ":.2f",
                     "longitude": ":.2f",
                 },
                 zoom=1,
                 height=650,
+            )
+            metric_label_wrapped = metric_label.replace(" ", "<br>")
+            fig.update_layout(
+                coloraxis_colorbar=dict(
+                    title=dict(
+                        text=metric_label_wrapped
+                    )
+                )
             )
             fig.update_layout(mapbox_style="carto-positron", margin=dict(l=0, r=0, t=0, b=0))
             st.plotly_chart(fig, use_container_width=True)
@@ -562,15 +706,15 @@ with tab2:
                 st.warning("No data for selected region.")
             else:
                 # defaults from regional averages (USD/kW for solar/wind)
-                reg_solar_kw = float(df_reg["solar_costs_usd_kw"].mean()) if "solar_costs_usd_kw" in df_reg else 0.99
-                reg_wind_kw = float(df_reg["wind_costs_usd_kw"].mean()) if "wind_costs_usd_kw" in df_reg else 1.50
+                reg_solar_kw = float(df_reg["solar_costs_usd_kw"].mean()) if "solar_costs_usd_kw" in df_reg else 990
+                reg_wind_kw = float(df_reg["wind_costs_usd_kw"].mean()) if "wind_costs_usd_kw" in df_reg else 1500
 
                 # convert back to USD/MW for existing CAPEX function baseline math
                 reg_solar_mw = reg_solar_kw 
                 reg_wind_mw = reg_wind_kw 
 
                 # proxy regional electrolyser default from elec component (or tech default if preferred)
-                default_elec = 1200.0 if tech == "alkaline" else 1400.0
+                default_elec = 1700.0 if tech == "Alkaline" else 2000
 
                 c1, c2, c3, c4 = st.columns(4)
                 with c1:
@@ -584,21 +728,99 @@ with tab2:
 
                 st.markdown(
                     f"Regional baseline CAPEX averages: "
-                    f"Solar = **{reg_solar_kw:.2f} USD/kW**, Wind = **{reg_wind_kw:.2f} USD/kW**"
+                    f"Solar = **{reg_solar_kw:.0f} USD/kW**, Wind = **{reg_wind_kw:.0f} USD/kW**"
                 )
 
                 if st.button("Run Regional CAPEX Recalculation", type="primary"):
                     out = change_capex_absolute_df(
                         df=df_reg,
                         solar_capex=solar_capex,
+                        solar_capex_original=float(np.nan_to_num(reg_solar_mw, nan=990.0)),
                         wind_capex=wind_capex,
+                        wind_capex_original=float(np.nan_to_num(reg_wind_mw, nan=1500.0)),
                         elec_capex=elec_capex,
                         initial_capex=initial_capex,
                     )
                     st.metric("Regional mean ΔLCOH", f"{out['delta_lcoh'].mean():.3f}")
 
-                    fig = px.histogram(out.dropna(subset=["delta_lcoh"]), x="delta_lcoh", nbins=50, title=f"ΔLCOH distribution - {selected_region}")
-                    st.plotly_chart(fig, use_container_width=True)
+                    # --- mini regional map of recalculated LCOH ---
+                    # ---------------------------------------
+                    # ---------------------------------------
+                    VAR_MAP = {
+                        "levelised_cost": {
+                            "label": "LCOH (USD/kg)",
+                            "fmt": ":.3f",
+                        },
+                        "Calculated_LCOH": {
+                            "label": "Recalculated LCOH (USD/kg)",
+                            "fmt": ":.3f",
+                        },
+                        "delta_lcoh": {
+                            "label": "ΔLCOH (USD/kg)",
+                            "fmt": ":.3f",
+                        },
+                        "carbon_intensity": {
+                            "label": "Carbon intensity (kgCO2/kgH2)",
+                            "fmt": ":.3f",
+                        },
+                        "electrolyser_capacity": {
+                            "label": "Electrolyser capacity (MW)",
+                            "fmt": ":.2f",
+                        },
+                        "hydrogen_technical_potential": {
+                            "label": "Hydrogen technical potential",
+                            "fmt": ":.2f",
+                        },
+                    }
+
+                    LABEL_TO_VAR = {v["label"]: k for k, v in VAR_MAP.items()}
+                    map_metric = "Calculated_LCOH"
+                    metric_label = VAR_MAP[map_metric]["label"]
+                    map_df = out.dropna(subset=[map_metric, "latitude", "longitude"]).copy()
+
+                    if map_df.empty:
+                        st.warning("No mappable points for selected region.")
+                    else:
+                        max_region_points = 6000
+                        if len(map_df) > max_region_points:
+                            map_df = map_df.sample(max_region_points, random_state=42)
+
+                        q_hi = map_df[map_metric].quantile(0.98)
+                        if not np.isfinite(q_hi):
+                            q_hi = map_df[map_metric].max()
+                        if not np.isfinite(q_hi) or q_hi <= 0:
+                            q_hi = 1e-6
+
+                        hover_data = {
+                            "region": True,
+                            "country_name": True if "country_name" in map_df.columns else False,
+                            "latitude": ":.2f",
+                            "longitude": ":.2f",
+                            "levelised_cost": VAR_MAP["levelised_cost"]["fmt"] if "levelised_cost" in map_df.columns else False,
+                            map_metric: VAR_MAP[map_metric]["fmt"],
+                        }
+
+                        fig = px.scatter_mapbox(
+                            map_df,
+                            lat="latitude",
+                            lon="longitude",
+                            color=map_metric,
+                            color_continuous_scale="Turbo",
+                            range_color=(0, q_hi),
+                            labels={k: VAR_MAP[k]["label"] for k in VAR_MAP if k in map_df.columns},
+                            hover_data=hover_data,
+                            zoom=3,
+                            height=420,
+                        )
+
+                        fig.update_layout(
+                            mapbox_style="carto-positron",
+                            coloraxis_colorbar=dict(title=metric_label),
+                            margin=dict(l=0, r=0, t=30, b=0),
+                            title=f"{metric_label} — {selected_region}",
+                        )
+
+                        st.plotly_chart(fig, use_container_width=True)
 
 # ==========================================================
 # TAB 3: REGIONAL SUMMARY
@@ -610,7 +832,7 @@ with tab3:
     else:
         lcoh_field = st.selectbox(
             "LCOH field for summary",
-            options=[VAR_LABELS["levelised_cost"], VAR_LABELS["levelised_cost_ren"], VAR_LABELS["levelised_cost_elec"]],
+            options=[VAR_LABELS["levelised_cost"]],
             index=0,
             key="region_lcoh_field",
         )
@@ -635,54 +857,63 @@ with tab3:
             st.markdown("### Cost component differences by region")
 
             # Build component summary from df_sf directly
-            comp = (
-                df_sf.dropna(subset=["region"])
-                .groupby("region", as_index=False)
-                .agg(
-                    lcoh_total=("levelised_cost", "mean"),
-                    lcoh_ren=("levelised_cost_ren", "mean"),
-                    lcoh_elec=("levelised_cost_elec", "mean"),
-                )
-            )
+            reg_break = regional_lcoh_component_breakdown(df_sf)
 
-            comp_long = comp.melt(
+            st.markdown("### Regional LCOH component breakdown (regional averages)")
+
+            # Stacked absolute components
+            comp_long = reg_break.melt(
                 id_vars="region",
-                value_vars=["lcoh_ren", "lcoh_elec"],
+                value_vars=[
+                    "residual_finance_other_lcoh",
+                    "renewables_undiscounted_lcoh",
+                    "electrolyser_undiscounted_lcoh",
+                                    ],
                 var_name="component",
-                value_name="value",
+                value_name="lcoh_component",
             )
             comp_long["component"] = comp_long["component"].map({
-                "lcoh_ren": "Renewables component",
-                "lcoh_elec": "Electrolyser component",
+                "renewables_undiscounted_lcoh": "Renewables (undiscounted)",
+                "electrolyser_undiscounted_lcoh": "Electrolyser (undiscounted)",
+                "residual_finance_other_lcoh": "Residual (financing/other)",
             })
 
-            fig_comp = px.bar(
-                comp_long.sort_values("region"),
+            fig_abs = px.bar(
+                comp_long,
                 x="region",
-                y="value",
+                y="lcoh_component",
                 color="component",
                 barmode="stack",
-                title="Average LCOH component breakdown by region",
-                labels={"value": "LCOH component (USD/kg)", "region": "Region"},
+                title="Regional LCOH decomposition (USD/kg)",
+                labels={"lcoh_component": "LCOH component (USD/kg)", "region": "Region"},
             )
-            fig_comp.update_layout(xaxis_tickangle=-35)
-            st.plotly_chart(fig_comp, use_container_width=True)
+            fig_abs.update_layout(xaxis_tickangle=-35)
+            st.plotly_chart(fig_abs, use_container_width=True)
 
-            
+            # 100% stacked shares
+            share_long = reg_break.melt(
+                id_vars="region",
+                value_vars=["residual_share", "renewables_share", "electrolyser_share"],
+                var_name="component",
+                value_name="share",
+            )
+            share_long["component"] = share_long["component"].map({
+                "renewables_share": "Renewables (undiscounted)",
+                "electrolyser_share": "Electrolyser (undiscounted)",
+                "residual_share": "Residual (financing/other)",
+            })
 
-            # Optional: relative to best region
-            best = comp["lcoh_total"].min()
-            comp["delta_vs_best"] = comp["lcoh_total"] - best
-
-            fig_delta = px.bar(
-                comp.sort_values("delta_vs_best"),
+            fig_share = px.bar(
+                share_long,
                 x="region",
-                y="delta_vs_best",
-                title="LCOH premium vs best-performing region",
-                labels={"delta_vs_best": "Δ LCOH vs best (USD/kg)", "region": "Region"},
+                y="share",
+                color="component",
+                barmode="stack",
+                title="Regional LCOH decomposition share",
+                labels={"share": "Share of LCOH", "region": "Region"},
             )
-            fig_delta.update_layout(xaxis_tickangle=-35)
-            st.plotly_chart(fig_delta, use_container_width=True)
+            fig_share.update_layout(xaxis_tickangle=-35, yaxis_tickformat=".0%")
+            st.plotly_chart(fig_share, use_container_width=True)
 
 # ==========================================================
 # TAB 4: COUNTRY SUMMARY (new)
