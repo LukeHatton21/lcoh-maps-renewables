@@ -93,44 +93,143 @@ def _load_nc(tech: str) -> xr.Dataset:
 
 @st.cache_data(show_spinner=False)
 def load_country_mapping() -> pd.DataFrame:
-    """
-    Expects data/country_mapping_regions.csv with at least:
-    - index (or country / country_id)
-    - country_name
-    - region
-    """
     fp = DATA_DIR / "country_mapping_regions.csv"
     if not fp.exists():
-        return pd.DataFrame()
+        return pd.DataFrame(columns=["country_id", "country_name", "region"])
 
     cm = pd.read_csv(fp)
 
-    # normalize common column names
-    rename_map = {}
-    if "index" in cm.columns:
-        rename_map["index"] = "country_id"
-    elif "country" in cm.columns:
-        rename_map["country"] = "country_id"
-    elif "country_number" in cm.columns:
-        rename_map["country_number"] = "country_id"
+    # flexible column names
+    cols = {c.lower(): c for c in cm.columns}
+    id_col = cols.get("index") or cols.get("country") or cols.get("country_id") or cols.get("country_number")
+    name_col = cols.get("country_name") or cols.get("name")
+    region_col = cols.get("region")
 
-    if "country_name" not in cm.columns:
-        # fallback if called name
-        if "name" in cm.columns:
-            rename_map["name"] = "country_name"
+    if not id_col or not name_col or not region_col:
+        return pd.DataFrame(columns=["country_id", "country_name", "region"])
 
-    cm = cm.rename(columns=rename_map)
+    cm = cm[[id_col, name_col, region_col]].copy()
+    cm.columns = ["country_id", "country_name", "region"]
 
-    required = {"country_id", "country_name", "region"}
-    if not required.issubset(set(cm.columns)):
-        return pd.DataFrame()
-
-    cm = cm[["country_id", "country_name", "region"]].copy()
     cm["country_id"] = pd.to_numeric(cm["country_id"], errors="coerce").astype("Int64")
     cm["country_name"] = cm["country_name"].astype("string")
     cm["region"] = cm["region"].astype("string")
+
     cm = cm.dropna(subset=["country_id"]).drop_duplicates(subset=["country_id"])
     return cm
+
+def regional_lcoh_component_breakdown(
+    df: pd.DataFrame,
+    lifetime_years: int = 20,
+    elec_om_frac: float = 0.03,
+    solar_om_frac: float = 0.023,
+    wind_om_frac: float = 0.026,
+) -> pd.DataFrame:
+    """
+    Regional-average LCOH breakdown:
+      - renewables_undiscounted_lcoh
+      - electrolyser_undiscounted_lcoh
+      - residual_finance_other_lcoh
+
+    Assumptions:
+      - solar_costs, wind_costs, electrolyser_costs are CAPEX terms per site basis
+      - annual O&M = fraction * CAPEX
+      - lifetime = 20 years
+      - hydrogen_production is annual production (same basis as your LCOH denominator)
+    """
+
+    req = [
+        "region",
+        "levelised_cost",
+        "hydrogen_production",
+        "solar_costs",
+        "wind_costs",
+        "electrolyser_costs",
+    ]
+    missing = [c for c in req if c not in df.columns]
+    if missing:
+        raise ValueError(f"Missing required columns: {missing}")
+
+    d = df.copy()
+    d = d.dropna(subset=["region", "levelised_cost", "hydrogen_production"])
+    d = d[d["hydrogen_production"] > 0]
+
+    # Fill missing CAPEX terms with 0 for component calc
+    for c in ["solar_costs", "wind_costs", "electrolyser_costs"]:
+        d[c] = pd.to_numeric(d[c], errors="coerce").fillna(0.0)
+
+    # Regional averages first (as requested)
+    reg = (
+        d.groupby("region", as_index=False)
+        .agg(
+            lcoh_mean=("levelised_cost", "mean"),
+            hydrogen_production_mean=("hydrogen_production", "mean"),
+            solar_costs_mean=("solar_costs", "mean"),
+            wind_costs_mean=("wind_costs", "mean"),
+            electrolyser_costs_mean=("electrolyser_costs", "mean"),
+        )
+    )
+
+    # Undiscounted lifetime costs
+    reg["renewables_capex_mean"] = reg["solar_costs_mean"] + reg["wind_costs_mean"]
+    reg["renewables_annual_om_mean"] = (
+        solar_om_frac * reg["solar_costs_mean"] + wind_om_frac * reg["wind_costs_mean"]
+    )
+    reg["renewables_total_lifetime_cost_mean"] = (
+        reg["renewables_capex_mean"] + lifetime_years * reg["renewables_annual_om_mean"]
+    )
+
+    reg["electrolyser_annual_om_mean"] = elec_om_frac * reg["electrolyser_costs_mean"]
+    reg["electrolyser_total_lifetime_cost_mean"] = (
+        reg["electrolyser_costs_mean"] + lifetime_years * reg["electrolyser_annual_om_mean"]
+    )
+
+    reg["hydrogen_lifetime_mean"] = lifetime_years * reg["hydrogen_production_mean"]
+
+    # Convert to LCOH components
+    reg["renewables_undiscounted_lcoh"] = (
+        reg["renewables_total_lifetime_cost_mean"] / reg["hydrogen_lifetime_mean"]
+    )
+    reg["electrolyser_undiscounted_lcoh"] = (
+        reg["electrolyser_total_lifetime_cost_mean"] / reg["hydrogen_lifetime_mean"]
+    )
+
+    reg["undiscounted_sum_lcoh"] = (
+        reg["renewables_undiscounted_lcoh"] + reg["electrolyser_undiscounted_lcoh"]
+    )
+
+    # residual to observed mean LCOH
+    reg["residual_finance_other_lcoh"] = reg["lcoh_mean"] - reg["undiscounted_sum_lcoh"]
+
+    # shares
+    reg["renewables_share"] = reg["renewables_undiscounted_lcoh"] / reg["lcoh_mean"]
+    reg["electrolyser_share"] = reg["electrolyser_undiscounted_lcoh"] / reg["lcoh_mean"]
+    reg["residual_share"] = reg["residual_finance_other_lcoh"] / reg["lcoh_mean"]
+
+    return reg.sort_values("lcoh_mean")
+
+def apply_country_region_mapping(df: pd.DataFrame, cm: pd.DataFrame) -> pd.DataFrame:
+    out = df.copy()
+    if out.empty:
+        out["country_name"] = pd.Series(dtype="string")
+        out["region"] = pd.Series(dtype="string")
+        return out
+
+    # country index from NetCDF expected in 'country'
+    if "country" not in out.columns:
+        out["country_id"] = pd.Series([pd.NA] * len(out), dtype="Int64")
+    else:
+        out["country_id"] = pd.to_numeric(out["country"], errors="coerce").astype("Int64")
+
+    if cm.empty:
+        out["country_name"] = "Unknown"
+        out["region"] = "Unknown"
+        return out
+
+    out = out.merge(cm, on="country_id", how="left")
+    out["country_name"] = out["country_name"].fillna("Unknown").astype("string")
+    out["region"] = out["region"].fillna("Unknown").astype("string")
+    return out
 
 def _grid_resolution(vals: pd.Series, default: float = 0.5) -> float:
     v = np.sort(pd.to_numeric(vals.dropna().unique(), errors="coerce"))
@@ -244,7 +343,6 @@ def load_points_slice_from_nc(tech: str, solar_fraction: int, columns: list[str]
     df = ds_sf[available].to_dataframe().reset_index()
 
     defaults = {
-        "region": "Unknown",
         "country": "Unknown",
         "carbon_intensity": np.nan,
         "carbon_intensity_low": np.nan,
@@ -352,7 +450,6 @@ needed_cols = [
     "solar_fraction",
     "latitude",
     "longitude",
-    "region",
     "country",   # numeric code from NetCDF
     "levelised_cost",
     "levelised_cost_ren",
@@ -371,7 +468,7 @@ with st.spinner("Downloading/loading underlying data..."):
     df_sf = load_points_slice_from_nc(tech=tech, solar_fraction=solar_fraction, columns=needed_cols)
 
 country_map = load_country_mapping()
-df_sf = apply_country_mapping(df_sf, country_map)
+df_sf = apply_country_region_mapping(df_sf, country_map)
 
 if not df_sf.empty:
     df_sf = df_sf.dropna(subset=["levelised_cost"], how="all")
@@ -570,6 +667,8 @@ with tab3:
             )
             fig_comp.update_layout(xaxis_tickangle=-35)
             st.plotly_chart(fig_comp, use_container_width=True)
+
+            
 
             # Optional: relative to best region
             best = comp["lcoh_total"].min()
